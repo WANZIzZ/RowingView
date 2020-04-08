@@ -16,73 +16,85 @@ import android.view.View
 class RowingView : View {
 
     /**
-     * 默认背景色 白色
-     */
-    private var bgColor = Color.WHITE
-
-    /**
      * 小河的画笔
      */
-    private val riverPaint = Paint().apply {
+    private val mRiverPaint = Paint().apply {
         style = Paint.Style.STROKE
         pathEffect = CornerPathEffect(100f)
         strokeWidth = 100f
     }
 
+    val mRowingView = BitmapFactory.decodeResource(resources, R.drawable.arrow)
+
     /**
      * 小河的路径
      */
-    private val riverPath = Path()
+    private val mRiverPath = Path()
 
     /**
      * 当前是第几个item
      */
-    private var position: Int = 0
+    private var mPosition: Int = 0
+
+    private var mProgress = 0f
+
+    private val mPathMeasure = PathMeasure()
+
+    private val mMatrix = Matrix()
 
     constructor(context: Context) : super(context)
 
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
 
-    fun setBkgColor(color: Int) {
-        this.bgColor = color
-    }
-
     fun setRiverColor(color: Int) {
-        riverPaint.color = color
+        mRiverPaint.color = color
     }
 
     fun setPosition(position: Int) {
-        this.position = position
+        this.mPosition = position
     }
 
-    fun move(progress: Int) {
-
+    fun move(progress: Float) {
+        this.mProgress = progress
+        postInvalidate()
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        drawBg(canvas)
         drawRiver(canvas)
-    }
-
-    private fun drawBg(canvas: Canvas) {
-        canvas.drawColor(bgColor)
+        moveRowing(canvas)
     }
 
     private fun drawRiver(canvas: Canvas) {
-        if (this.position % 2 == 1) {
-            riverPath.moveTo((width * 4 / 5).toFloat(), 0f)
-            riverPath.rLineTo(0f, (height * 2 / 3.toFloat()))
-            riverPath.rLineTo(-(width * 3 / 5).toFloat(), 0f)
-            riverPath.rLineTo(0f, (height / 3).toFloat())
+        if (this.mPosition % 2 == 1) {
+            mRiverPath.moveTo((width * 4 / 5).toFloat(), 0f)
+            mRiverPath.rLineTo(0f, (height * 2 / 3.toFloat()))
+            mRiverPath.rLineTo(-(width * 3 / 5).toFloat(), 0f)
+            mRiverPath.rLineTo(0f, (height / 3).toFloat())
         } else {
-            riverPath.moveTo((width * 1 / 5).toFloat(), 0f)
-            riverPath.rLineTo(0f, (height * 2 / 3.toFloat()))
-            riverPath.rLineTo((width * 3 / 5).toFloat(), 0f)
-            riverPath.rLineTo(0f, (height / 3).toFloat())
+            mRiverPath.moveTo((width * 1 / 5).toFloat(), 0f)
+            mRiverPath.rLineTo(0f, (height * 2 / 3.toFloat()))
+            mRiverPath.rLineTo((width * 3 / 5).toFloat(), 0f)
+            mRiverPath.rLineTo(0f, (height / 3).toFloat())
         }
-        canvas.drawPath(riverPath, riverPaint)
+        canvas.drawPath(mRiverPath, mRiverPaint)
+    }
+
+    private fun moveRowing(canvas: Canvas) {
+        if (mProgress != 0f) {
+            mPathMeasure.setPath(mRiverPath, false)
+            mPathMeasure.getMatrix(
+                (1 - mProgress) * mPathMeasure.length,
+                mMatrix,
+                PathMeasure.POSITION_MATRIX_FLAG or PathMeasure.TANGENT_MATRIX_FLAG
+            )
+            mMatrix.postTranslate(
+                mRowingView.width / 2.toFloat(),
+                -mRowingView.height / 2.toFloat()
+            )
+            canvas.drawBitmap(mRowingView, mMatrix, mRiverPaint)
+        }
     }
 
 }

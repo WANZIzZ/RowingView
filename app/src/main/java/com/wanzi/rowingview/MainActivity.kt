@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private val adapter = RowingAdapter(ArrayList<Adventure>().apply {
-        add(Adventure(Adventure.TYPE_GAME, null, null))
+        // add(Adventure(Adventure.TYPE_GAME, null, null))
         add(
             Adventure(
                 Adventure.TYPE_ADVENTURE,
@@ -56,16 +56,25 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         rv.layoutManager = LinearLayoutManager(this)
-        rv.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL).apply {
-            setDrawable(getDrawable(R.drawable.divider_item_decoration)!!)
-        })
         rv.adapter = adapter
         rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
+                // 总移动距离 单位 px
+                val computeVerticalScrollOffset = recyclerView.computeVerticalScrollOffset()
+                // 平均每个item滑动距离
+                val scrollDistance = (dp2px((240f + 16f) * 5 + 24f) - recyclerView.height) / 5
+                val f = 1 - computeVerticalScrollOffset % scrollDistance / scrollDistance
+                val position = computeVerticalScrollOffset / scrollDistance.toInt()
                 val adapter = recyclerView.adapter as RowingAdapter
-                adapter.move(50)
+                Log.d("Wanzi", "onScrolled:$position")
+                adapter.move(position, f)
+                adapter.notifyItemChanged(position, 1000)
             }
         })
+    }
+
+    fun dp2px(dp: Float): Float {
+        return dp * resources.displayMetrics.density + 0.5f
     }
 }

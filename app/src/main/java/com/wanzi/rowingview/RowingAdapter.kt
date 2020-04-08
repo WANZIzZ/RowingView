@@ -1,6 +1,7 @@
 package com.wanzi.rowingview
 
 import android.graphics.Color
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.cardview.widget.CardView
@@ -17,14 +18,36 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder
 class RowingAdapter(data: MutableList<Adventure>) :
     BaseQuickAdapter<Adventure, BaseViewHolder>(R.layout.item_rowing, data) {
 
-    private lateinit var rowingView: RowingView
+    private val ROWING_TAG = "RowingView"
 
-    fun move(progress: Int) {
+    private var lastRowingView: RowingView? = null
+
+    fun move(position: Int, progress: Float) {
+        val rowingView = findRowingView(position)
         rowingView.move(progress)
     }
 
-    override fun convert(holder: BaseViewHolder, item: Adventure) {
+    override fun onBindViewHolder(
+        holder: BaseViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        super.onBindViewHolder(holder, position, payloads)
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position)
+        } else if (payloads.first() == 1000) {
+            val cardView = holder.getView<CardView>(R.id.cardView)
+            val rowingView = cardView.findViewWithTag<RowingView>(ROWING_TAG)
+            if (rowingView != lastRowingView) {
+                lastRowingView?.z = 0f
+                rowingView.z = 1f
+                lastRowingView = rowingView
+            }
+        }
+    }
 
+
+    override fun convert(holder: BaseViewHolder, item: Adventure) {
         val title = holder.getView<TextView>(R.id.title)
         title.text = if (item.type == Adventure.TYPE_GAME) "游戏" else "冒险"
 
@@ -42,13 +65,18 @@ class RowingAdapter(data: MutableList<Adventure>) :
 
         if (item.type == Adventure.TYPE_ADVENTURE) {
             val cardView = holder.getView<CardView>(R.id.cardView)
-            rowingView = RowingView(context)
-            rowingView.setBkgColor(item.background ?: Color.WHITE)
-            rowingView.setRiverColor(item.river ?: Color.WHITE)
-            rowingView.setPosition(holder.layoutPosition)
+            val rowingView = RowingView(context).apply {
+                setBackgroundColor(item.background?:Color.WHITE)
+                setRiverColor(item.river ?: Color.WHITE)
+                setPosition(holder.layoutPosition)
+                tag = ROWING_TAG
+            }
             cardView.addView(rowingView)
         }
     }
 
-
+    private fun findRowingView(position: Int): RowingView {
+        return getViewByPosition(position, R.id.cardView)?.findViewWithTag(ROWING_TAG)
+            ?: throw Exception("传入的position异常:$position")
+    }
 }
