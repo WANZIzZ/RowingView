@@ -15,16 +15,21 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder
  *     desc   :
  *     version: 1.0
  */
-class RowingAdapter(data: MutableList<Adventure>) :
+class RiverAdapter(data: MutableList<Adventure>) :
     BaseQuickAdapter<Adventure, BaseViewHolder>(R.layout.item_rowing, data) {
 
     private val ROWING_TAG = "RowingView"
 
-    private var lastRowingView: RowingView? = null
+    private var lastRiverView: RiverView? = null
 
     fun move(position: Int, progress: Float) {
-        val rowingView = findRowingView(position)
-        rowingView.move(progress)
+        val riverView = findRowingView(position)
+        riverView.move(progress)
+    }
+
+    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
+        super.onBindViewHolder(holder, position)
+
     }
 
     override fun onBindViewHolder(
@@ -37,11 +42,11 @@ class RowingAdapter(data: MutableList<Adventure>) :
             onBindViewHolder(holder, position)
         } else if (payloads.first() == 1000) {
             val cardView = holder.getView<CardView>(R.id.cardView)
-            val rowingView = cardView.findViewWithTag<RowingView>(ROWING_TAG)
-            if (rowingView != lastRowingView) {
-                lastRowingView?.z = 0f
-                rowingView.z = 1f
-                lastRowingView = rowingView
+            val riverView = cardView.findViewWithTag<RiverView>(ROWING_TAG)
+            if (riverView != lastRiverView) {
+                lastRiverView?.z = 0f
+                riverView.z = 1f
+                lastRiverView = riverView
             }
         }
     }
@@ -50,32 +55,25 @@ class RowingAdapter(data: MutableList<Adventure>) :
     override fun convert(holder: BaseViewHolder, item: Adventure) {
         val title = holder.getView<TextView>(R.id.title)
         title.text = if (item.type == Adventure.TYPE_GAME) "游戏" else "冒险"
-
-        when {
-            holder.adapterPosition == 0 -> {
-                title.visibility = View.VISIBLE
-            }
-            item.type != data[holder.adapterPosition - 1].type -> {
-                title.visibility = View.VISIBLE
-            }
-            else -> {
-                title.visibility = View.GONE
-            }
-        }
+        title.visibility = if (holder.layoutPosition == 0) View.VISIBLE else View.GONE
 
         if (item.type == Adventure.TYPE_ADVENTURE) {
             val cardView = holder.getView<CardView>(R.id.cardView)
-            val rowingView = RowingView(context).apply {
-                setBackgroundColor(item.background?:Color.WHITE)
+            val width = context.resources.displayMetrics.widthPixels.toFloat() - context.dp2px(32f)
+            val height = cardView.layoutParams.height.toFloat()
+            val riverView = RiverView(context).apply {
+                setBackgroundColor(item.background ?: Color.WHITE)
                 setRiverColor(item.river ?: Color.WHITE)
-                setPosition(holder.layoutPosition)
+                setRiverWidth(100f)
+                setRiverPath(getPath(holder.adapterPosition, width, height))
                 tag = ROWING_TAG
             }
-            cardView.addView(rowingView)
+
+            cardView.addView(riverView)
         }
     }
 
-    private fun findRowingView(position: Int): RowingView {
+    private fun findRowingView(position: Int): RiverView {
         return getViewByPosition(position, R.id.cardView)?.findViewWithTag(ROWING_TAG)
             ?: throw Exception("传入的position异常:$position")
     }

@@ -1,19 +1,18 @@
 package com.wanzi.rowingview
 
+import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.chad.library.adapter.base.util.getItemView
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val adapter = RowingAdapter(ArrayList<Adventure>().apply {
-        // add(Adventure(Adventure.TYPE_GAME, null, null))
+    private val adapter = RiverAdapter(ArrayList<Adventure>().apply {
+        //  add(Adventure(Adventure.TYPE_GAME, null, null))
         add(
             Adventure(
                 Adventure.TYPE_ADVENTURE,
@@ -55,26 +54,27 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        rv.layoutManager = LinearLayoutManager(this)
+        btn.setOnClickListener {
+            startActivity(Intent(this, RiverTestActivity::class.java))
+        }
+
+        rv.layoutManager = RiverLinearLayoutManager(this)
         rv.adapter = adapter
         rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                // 总移动距离 单位 px
+                // 总移动距离
                 val computeVerticalScrollOffset = recyclerView.computeVerticalScrollOffset()
                 // 平均每个item滑动距离
                 val scrollDistance = (dp2px((240f + 16f) * 5 + 24f) - recyclerView.height) / 5
-                val f = 1 - computeVerticalScrollOffset % scrollDistance / scrollDistance
-                val position = computeVerticalScrollOffset / scrollDistance.toInt()
-                val adapter = recyclerView.adapter as RowingAdapter
-                Log.d("Wanzi", "onScrolled:$position")
-                adapter.move(position, f)
-                adapter.notifyItemChanged(position, 1000)
+                val progress = computeVerticalScrollOffset % scrollDistance / scrollDistance
+                val position = (computeVerticalScrollOffset / scrollDistance).toInt()
+                val adapter = recyclerView.adapter as RiverAdapter
+                recyclerView.post {
+                    adapter.move(position, progress)
+                    adapter.notifyItemChanged(position, 1000)
+                }
             }
         })
-    }
-
-    fun dp2px(dp: Float): Float {
-        return dp * resources.displayMetrics.density + 0.5f
     }
 }
