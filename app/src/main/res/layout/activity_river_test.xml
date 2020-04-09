@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <Button
+    <!--<Button
         android:id="@+id/btn_up"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,11 +14,10 @@
         android:id="@+id/btn_down"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="下移" />
+        android:text="下移" />-->
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="match_parent"
-        android:layout_height="240dp"
-        android:layout_margin="16dp" />
+        android:layout_height="240dp" />
 </LinearLayout>

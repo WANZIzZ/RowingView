@@ -24,8 +24,6 @@ class RiverView : View {
      */
     private val mRiverPaint = Paint().apply {
         style = Paint.Style.STROKE
-        color = Color.BLACK
-        strokeWidth = 10f
     }
 
     /**
@@ -33,7 +31,7 @@ class RiverView : View {
      */
     private val mRowing = BitmapFactory.decodeResource(resources, R.drawable.arrow)
 
-    private val mPathMeasure = PathMeasure(mRiverPath, false)
+    private val mPathMeasure = PathMeasure()
     private lateinit var mMatrix: Matrix
 
     constructor(context: Context) : super(context)
@@ -62,6 +60,9 @@ class RiverView : View {
         mRiverPaint.strokeWidth = width
     }
 
+    /**
+     *
+     */
     fun move(progress: Float) {
         if (!this::mMatrix.isInitialized) {
             mMatrix = Matrix()

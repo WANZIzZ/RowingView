@@ -23,14 +23,14 @@ class RiverTestActivity : AppCompatActivity() {
 
         cardView.addView(riverView)
 
-        riverView.move(0f)
+        //  riverView.move(0f)
 
-        btn_up.setOnClickListener {
+        /*btn_up.setOnClickListener {
             riverView.move(-0.1f)
         }
 
         btn_down.setOnClickListener {
             riverView.move(0.1f)
-        }
+        }*/
     }
 }
