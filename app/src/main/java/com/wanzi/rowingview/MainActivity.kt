@@ -1,18 +1,15 @@
 package com.wanzi.rowingview
 
-import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private val adapter = RiverAdapter(ArrayList<Adventure>().apply {
-        //  add(Adventure(Adventure.TYPE_GAME, null, null))
+        add(Adventure(Adventure.TYPE_GAME, null, null))
         add(
             Adventure(
                 Adventure.TYPE_ADVENTURE,
@@ -62,13 +59,13 @@ class MainActivity : AppCompatActivity() {
                 // 总移动距离
                 val computeVerticalScrollOffset = recyclerView.computeVerticalScrollOffset()
                 // 平均每个item滑动距离
-                val scrollDistance = (dp2px((240f + 16f) * 5 + 24f) - recyclerView.height) / 5
+                val scrollDistance = (dp2px((240f + 16f) * 6 + 48f) - recyclerView.height) / 5
                 val progress = computeVerticalScrollOffset % scrollDistance / scrollDistance
-                val position = (computeVerticalScrollOffset / scrollDistance).toInt()
+                val position = 1 + (computeVerticalScrollOffset / scrollDistance).toInt()
                 val adapter = recyclerView.adapter as RiverAdapter
                 recyclerView.post {
                     adapter.move(position, progress)
-                    adapter.notifyItemChanged(position, 1000)
+                    adapter.notifyItemChanged(position, 1)
                 }
             }
         })

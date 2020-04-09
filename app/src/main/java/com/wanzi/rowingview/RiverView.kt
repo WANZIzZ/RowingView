@@ -34,7 +34,7 @@ class RiverView : View {
     private val mRowing = BitmapFactory.decodeResource(resources, R.drawable.arrow)
 
     private val mPathMeasure = PathMeasure(mRiverPath, false)
-    private val mMatrix = Matrix()
+    private lateinit var mMatrix: Matrix
 
     constructor(context: Context) : super(context)
 
@@ -63,6 +63,10 @@ class RiverView : View {
     }
 
     fun move(progress: Float) {
+        if (!this::mMatrix.isInitialized) {
+            mMatrix = Matrix()
+        }
+
         mMatrix.reset()
 
         mPathMeasure.getMatrix(
@@ -80,6 +84,9 @@ class RiverView : View {
         super.onDraw(canvas)
 
         canvas.drawPath(mRiverPath, mRiverPaint)
-        canvas.drawBitmap(mRowing, mMatrix, mRiverPaint)
+
+        if (this::mMatrix.isInitialized) {
+            canvas.drawBitmap(mRowing, mMatrix, mRiverPaint)
+        }
     }
 }

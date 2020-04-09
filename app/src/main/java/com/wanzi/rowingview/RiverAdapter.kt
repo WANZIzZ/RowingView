@@ -1,7 +1,6 @@
 package com.wanzi.rowingview
 
 import android.graphics.Color
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.cardview.widget.CardView
@@ -23,13 +22,8 @@ class RiverAdapter(data: MutableList<Adventure>) :
     private var lastRiverView: RiverView? = null
 
     fun move(position: Int, progress: Float) {
-        val riverView = findRowingView(position)
+        val riverView = findRiverView(position)
         riverView.move(progress)
-    }
-
-    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
-        super.onBindViewHolder(holder, position)
-
     }
 
     override fun onBindViewHolder(
@@ -40,7 +34,7 @@ class RiverAdapter(data: MutableList<Adventure>) :
         super.onBindViewHolder(holder, position, payloads)
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
-        } else if (payloads.first() == 1000) {
+        } else {
             val cardView = holder.getView<CardView>(R.id.cardView)
             val riverView = cardView.findViewWithTag<RiverView>(ROWING_TAG)
             if (riverView != lastRiverView) {
@@ -55,7 +49,11 @@ class RiverAdapter(data: MutableList<Adventure>) :
     override fun convert(holder: BaseViewHolder, item: Adventure) {
         val title = holder.getView<TextView>(R.id.title)
         title.text = if (item.type == Adventure.TYPE_GAME) "游戏" else "冒险"
-        title.visibility = if (holder.layoutPosition == 0) View.VISIBLE else View.GONE
+        title.visibility = when {
+            holder.adapterPosition == 0 -> View.VISIBLE
+            item.type != data[holder.adapterPosition - 1].type -> View.VISIBLE
+            else -> View.GONE
+        }
 
         if (item.type == Adventure.TYPE_ADVENTURE) {
             val cardView = holder.getView<CardView>(R.id.cardView)
@@ -73,7 +71,7 @@ class RiverAdapter(data: MutableList<Adventure>) :
         }
     }
 
-    private fun findRowingView(position: Int): RiverView {
+    private fun findRiverView(position: Int): RiverView {
         return getViewByPosition(position, R.id.cardView)?.findViewWithTag(ROWING_TAG)
             ?: throw Exception("传入的position异常:$position")
     }
