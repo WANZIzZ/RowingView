@@ -54,10 +54,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        btn.setOnClickListener {
-            startActivity(Intent(this, RiverTestActivity::class.java))
-        }
-
         rv.layoutManager = RiverLinearLayoutManager(this)
         rv.adapter = adapter
         rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
