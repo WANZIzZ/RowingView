@@ -2,10 +2,12 @@
 
 目标效果：
 
-![a.gif](http://ww1.sinaimg.cn/large/c43dae63gy1gdnupzwxj6g20a90idnpd.gif)
+![a.gif](https://github.com/WANZIzZ/RowingView/blob/master/images/a.gif)
+
+第一版效果：
+
+![b.gif](https://github.com/WANZIzZ/RowingView/blob/master/images/b.gif)
 
 目前效果：
 
-![b.gif](http://ww1.sinaimg.cn/large/c43dae63gy1gdnuqps495g20a90ide81.gif)
-
-
+![c.gif](https://github.com/WANZIzZ/RowingView/blob/master/images/c.gif)
