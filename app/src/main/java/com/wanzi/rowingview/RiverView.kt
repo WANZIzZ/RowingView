@@ -3,7 +3,8 @@ package com.wanzi.rowingview
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.view.View
+import android.view.ViewGroup
+import kotlin.math.atan2
 
 /**
  *     author : 丸子
@@ -12,7 +13,7 @@ import android.view.View
  *     desc   :
  *     version: 1.0
  */
-class RiverView : View {
+class RiverView : ViewGroup {
 
     /**
      * 小河路径
@@ -27,16 +28,29 @@ class RiverView : View {
     }
 
     /**
-     * 小船
+     * 小船（前期用箭头替代）
      */
-    private val mRowing = BitmapFactory.decodeResource(resources, R.drawable.arrow)
+    private val mArrow = BitmapFactory.decodeResource(resources, R.drawable.arrow)
+
+    /**
+     * 真实的小船
+     */
+    val rowing = RowingView(context)
 
     private val mPathMeasure = PathMeasure()
+    private val mPos = FloatArray(2)
+    private val mTan = FloatArray(2)
     private lateinit var mMatrix: Matrix
 
     constructor(context: Context) : super(context)
 
     constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
+
+    init {
+        setWillNotDraw(false)
+
+        rowing.layout(0, 0, 200, 200)
+    }
 
     /**
      * 设置小河路径
@@ -61,11 +75,12 @@ class RiverView : View {
     }
 
     /**
-     *
+     * 移动小船
      */
     fun move(progress: Float) {
         if (!this::mMatrix.isInitialized) {
             mMatrix = Matrix()
+            addView(rowing)
         }
 
         mMatrix.reset()
@@ -76,10 +91,14 @@ class RiverView : View {
             PathMeasure.POSITION_MATRIX_FLAG or PathMeasure.TANGENT_MATRIX_FLAG
         )
 
-        mMatrix.preTranslate(-mRowing.width / 2.toFloat(), -mRowing.height / 2.toFloat())
+        mPathMeasure.getPosTan((progress) * mPathMeasure.length, mPos, mTan)
+
+        mMatrix.preTranslate(-mArrow.width / 2.toFloat(), -mArrow.height / 2.toFloat())
 
         invalidate()
     }
+
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -87,7 +106,12 @@ class RiverView : View {
         canvas.drawPath(mRiverPath, mRiverPaint)
 
         if (this::mMatrix.isInitialized) {
-            canvas.drawBitmap(mRowing, mMatrix, mRiverPaint)
+            rowing.let {
+                it.translationX = mPos[0] - it.width / 2
+                it.translationY = mPos[1] - it.height / 2
+                it.rotation = atan2(mTan[1], mTan[0]) * 180 / Math.PI.toFloat() + 180
+            }
+            //    canvas.drawBitmap(mArrow, mMatrix, mRiverPaint)
         }
     }
 }

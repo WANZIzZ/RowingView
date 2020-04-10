@@ -39,7 +39,9 @@ class RiverAdapter(data: MutableList<Adventure>) :
             val riverView = cardView.findViewWithTag<RiverView>(ROWING_TAG)
             if (riverView != lastRiverView) {
                 lastRiverView?.z = 0f
+                lastRiverView?.rowing?.visibility = View.GONE
                 riverView.z = 1f
+                riverView.rowing.visibility = View.VISIBLE
                 lastRiverView = riverView
             }
         }
