@@ -17,8 +17,6 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder
 class RiverAdapter(data: MutableList<Adventure>) :
     BaseQuickAdapter<Adventure, BaseViewHolder>(R.layout.item_rowing, data) {
 
-    private val ROWING_TAG = "RowingView"
-
     private var lastRiverView: RiverView? = null
 
     fun move(position: Int, progress: Float) {
@@ -36,7 +34,7 @@ class RiverAdapter(data: MutableList<Adventure>) :
             onBindViewHolder(holder, position)
         } else {
             val cardView = holder.getView<CardView>(R.id.cardView)
-            val riverView = cardView.findViewWithTag<RiverView>(ROWING_TAG)
+            val riverView = cardView.findViewWithTag<RiverView>(position)
             if (riverView != lastRiverView) {
                 lastRiverView?.z = 0f
                 lastRiverView?.rowing?.visibility = View.GONE
@@ -66,7 +64,7 @@ class RiverAdapter(data: MutableList<Adventure>) :
                 setRiverColor(item.river ?: Color.WHITE)
                 setRiverWidth(100f)
                 setRiverPath(getPath(holder.adapterPosition, width, height))
-                tag = ROWING_TAG
+                tag = holder.layoutPosition
             }
 
             cardView.addView(riverView)
@@ -74,7 +72,7 @@ class RiverAdapter(data: MutableList<Adventure>) :
     }
 
     private fun findRiverView(position: Int): RiverView {
-        return getViewByPosition(position, R.id.cardView)?.findViewWithTag(ROWING_TAG)
+        return getViewByPosition(position, R.id.cardView)?.findViewWithTag(position)
             ?: throw Exception("传入的position异常:$position")
     }
 }
